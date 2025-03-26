@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact Extractor Settings</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Contact Extractor Settings</h1>
+    <form id="settingsForm">
+      <div class="setup-section">
+        <h2>Gemini API Key</h2>
+        <p class="setup-info">Used for AI-powered contact information extraction from text</p>
+        <div class="form-group">
+          <label for="geminiKey">Gemini API Key:</label>
+          <input type="password" id="geminiKey" required>
+          <div class="help-text">
+            <strong>How to get it:</strong>
+            <ol>
+              <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+              <li>Click "Create API Key" if you don't have one</li>
+              <li>Copy and paste the key here</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button type="submit">Save Settings</button>
+        <button type="button" id="showCredentials">Show/Hide API Key</button>
+      </div>
+    </form>
+    <div id="status" class="status"></div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

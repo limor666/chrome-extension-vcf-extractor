@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Contact Information Extractor",
+  "version": "1.0",
+  "description": "Extract contact information from highlighted text using Gemini API",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "tabs",
+    "identity",
+    "identity.email"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "https://*.googleapis.com/*",
+    "<all_urls>"
+  ],
+  "oauth2": {
+    "client_id": "849778126107-g4iaf85pci5qj6qsq35m65ihg7v1olqm.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/contacts"]
+  }
+}

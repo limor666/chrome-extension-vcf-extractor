@@ -1,49 +1,67 @@
 # Contact Information Extractor Chrome Extension
 
-This Chrome extension extracts contact information from highlighted text using the Gemini AI API and allows saving to VCF files or Google Contacts.
+This extension extracts contact information from selected text using Google's Gemini AI and allows saving to VCF files or Google Contacts.
 
-## Setup Instructions
+## Features
 
-1. Install the extension in Chrome
-2. Configure the extension settings (click extension icon -> right-click -> Options):
+- Extract contact details from any selected text
+- Parse structured address components (street, city, postal code, country)
+- Detect social media profiles (LinkedIn, WeChat, X/Twitter)
+- Save as VCF file
+- Save directly to Google Contacts
+- Custom icon in toolbar and context menu
 
-   a. Get Gemini API Key:
-   - Visit https://makersuite.google.com/app/apikey
-   - Create a new API key if you don't have one
-   - Copy and paste the key into the extension settings
+## Setup
 
-   b. Get OAuth Client ID:
-   - Visit https://console.cloud.google.com
-   - Create a new project or select an existing one
-   - Enable the People API in the API Library
-   - Go to Credentials and create a new OAuth 2.0 Client ID
-   - Set Application Type to "Chrome Extension"
-   - For Application ID, use your extension ID (found in chrome://extensions)
-   - Add "https://people.googleapis.com/auth/contacts" to the scopes
-   - Copy and paste the Client ID into the extension settings
+1. Get your Gemini API key:
+   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create a new API key
+   - Copy the key
+
+2. Configure the extension:
+   - Click the extension icon in Chrome toolbar
+   - Select "Options"
+   - Enter your Gemini API key
+   - Click Save
 
 ## Usage
 
-1. Highlight any text containing contact information
-2. Right-click and select "Extract Contact Info"
-3. The extension will analyze the text and display extracted contact details
-4. You can then:
-   - Edit the extracted information if needed
-   - Download as a VCF file
-   - Save directly to Google Contacts (requires Google account authorization)
+1. Select text containing contact information
+2. Right-click and choose "Extract Contact Info"
+3. Review and edit the extracted information
+4. Choose to:
+   - Download as VCF file
+   - Save to Google Contacts (requires Google account sign-in)
 
-## Supported Contact Fields
+## Contact Fields Supported
 
+Basic Information:
 - Name
 - Email
 - Phone
 - Company
 - Title
-- Address
 
-## Troubleshooting
+Address (structured):
+- Street Address
+- City
+- Postal Code
+- Country
 
-- If contact extraction fails, try highlighting a smaller, more focused section of text
-- Ensure both the Gemini API key and OAuth Client ID are correctly configured
-- For Google Contacts integration, make sure you're signed into Chrome with your Google account
-- Check the browser console for detailed error messages if issues persist
+Social Media:
+- LinkedIn
+- WeChat
+- X/Twitter
+
+## Permissions
+
+The extension requires:
+- Access to selected text for contact extraction
+- Gemini API access for AI processing
+- Google Contacts API for saving contacts (optional)
+
+## Privacy
+
+- Your Gemini API key is stored locally in Chrome
+- Google Contacts integration uses standard OAuth2 authentication
+- No data is stored on external servers

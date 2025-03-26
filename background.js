@@ -1,10 +1,14 @@
 // background.js
 console.log('Background script loading...');
 
-// Create context menu item
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('Extension installed/updated, creating context menu...');
-  
+function handleError(error) {
+  console.error('Extension error:', error);
+  if (chrome.runtime.lastError) {
+    console.error('Chrome runtime error:', chrome.runtime.lastError);
+  }
+}
+
+function setupContextMenu() {
   try {
     chrome.contextMenus.create({
       id: "extractContact",
@@ -12,13 +16,28 @@ chrome.runtime.onInstalled.addListener(() => {
       contexts: ["selection"]
     }, () => {
       if (chrome.runtime.lastError) {
-        console.error('Failed to create context menu:', chrome.runtime.lastError);
+        handleError(chrome.runtime.lastError);
       } else {
         console.log('Context menu created successfully');
       }
     });
   } catch (error) {
-    console.error('Error creating context menu:', error);
+    handleError(error);
+  }
+}
+
+// Create context menu on install
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('Extension installed/updated, setting up context menu...');
+  try {
+    chrome.contextMenus.removeAll(() => {
+      if (chrome.runtime.lastError) {
+        handleError(chrome.runtime.lastError);
+      }
+      setupContextMenu();
+    });
+  } catch (error) {
+    handleError(error);
   }
 });
 
@@ -72,7 +91,13 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       const requestBody = {
         contents: [{
           parts: [{
-            text: `Extract only the following fields from this text and respond with ONLY a JSON object containing these fields (no other text or formatting): name, email, phone, company, title, address. Text to process: ${selectedText}`
+            text: `Extract only the following fields from this text and respond with ONLY a JSON object containing these fields (no other text or formatting):
+name, email, phone, company, title, 
+streetAddress, city, postcode, country,
+linkedin, wechat, twitter.
+
+Split any full address into its components. For country, provide the full official country name (e.g., 'United States' not 'USA', 'United Kingdom' not 'UK'). Format social media as full URLs if possible.
+Text to process: ${selectedText}`
           }]
         }]
       };

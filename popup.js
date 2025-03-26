@@ -25,6 +25,13 @@ function generateVcf() {
     return;
   }
 
+  const addressFields = [];
+  if (contact.streetAddress) addressFields.push(contact.streetAddress);
+  if (contact.city) addressFields.push(contact.city);
+  if (contact.postcode) addressFields.push(contact.postcode);
+  if (contact.country) addressFields.push(contact.country);
+  const fullAddress = addressFields.join(', ');
+
   const vcf = `BEGIN:VCARD
 VERSION:3.0
 FN:${contact.name}
@@ -32,7 +39,10 @@ ${contact.email ? `EMAIL:${contact.email}` : ''}
 ${contact.phone ? `TEL:${contact.phone}` : ''}
 ${contact.company ? `ORG:${contact.company}` : ''}
 ${contact.title ? `TITLE:${contact.title}` : ''}
-${contact.address ? `ADR:;;${contact.address};;;` : ''}
+${addressFields.length > 0 ? `ADR:;;${contact.streetAddress};${contact.city};${contact.postcode};${contact.country}` : ''}
+${contact.linkedin ? `URL;type=LinkedIn:${contact.linkedin}` : ''}
+${contact.twitter ? `URL;type=Twitter:${contact.twitter}` : ''}
+${contact.wechat ? `X-WECHAT:${contact.wechat}` : ''}
 END:VCARD`;
 
   const blob = new Blob([vcf], { type: 'text/vcard' });
@@ -89,9 +99,27 @@ async function saveToGoogleContacts() {
           name: contact.company,
           title: contact.title || ''
         }] : [],
-        addresses: contact.address ? [{
-          streetAddress: contact.address,
-          type: "home"
+        addresses: (contact.streetAddress || contact.city || contact.postcode || contact.country) ? [{
+          streetAddress: contact.streetAddress || '',
+          city: contact.city || '',
+          postalCode: contact.postcode || '',
+          country: contact.country || '',
+          countryCode: contact.country || '',
+          type: 'home',
+          formattedValue: [
+            contact.streetAddress,
+            contact.city,
+            contact.postcode,
+            contact.country
+          ].filter(Boolean).join(', ')
+        }] : [],
+        urls: [
+          ...(contact.linkedin ? [{type: 'profile', value: contact.linkedin}] : []),
+          ...(contact.twitter ? [{type: 'twitter', value: contact.twitter}] : [])
+        ],
+        userDefined: contact.wechat ? [{
+          key: 'WeChat',
+          value: contact.wechat
         }] : []
       })
     });
@@ -118,7 +146,13 @@ function getFormData() {
     phone: document.getElementById('phone').value.trim(),
     company: document.getElementById('company').value.trim(),
     title: document.getElementById('title').value.trim(),
-    address: document.getElementById('address').value.trim()
+    streetAddress: document.getElementById('streetAddress').value.trim(),
+    city: document.getElementById('city').value.trim(),
+    postcode: document.getElementById('postcode').value.trim(),
+    country: document.getElementById('country').value.trim(),
+    linkedin: document.getElementById('linkedin').value.trim(),
+    wechat: document.getElementById('wechat').value.trim(),
+    twitter: document.getElementById('twitter').value.trim()
   };
 }
 

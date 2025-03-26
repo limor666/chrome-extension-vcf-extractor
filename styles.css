@@ -7,6 +7,31 @@
   margin-bottom: 15px;
 }
 
+.address-section,
+.social-section {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.address-section h3,
+.social-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #2c5282;
+  font-size: 1.1em;
+}
+
+input[type="url"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 .form-group label {
   display: block;
   margin-bottom: 5px;

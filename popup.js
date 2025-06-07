@@ -36,13 +36,17 @@ function generateVcf() {
 VERSION:3.0
 FN:${contact.name}
 ${contact.email ? `EMAIL:${contact.email}` : ''}
-${contact.phone ? `TEL:${contact.phone}` : ''}
+${contact.mobilePhone ? `TEL;type=CELL:${contact.mobilePhone}` : ''}
+${contact.landlinePhone ? `TEL;type=WORK:${contact.landlinePhone}` : ''}
+${contact.notes ? `NOTE:${contact.notes}` : ''}
 ${contact.company ? `ORG:${contact.company}` : ''}
 ${contact.title ? `TITLE:${contact.title}` : ''}
 ${addressFields.length > 0 ? `ADR:;;${contact.streetAddress};${contact.city};${contact.postcode};${contact.country}` : ''}
 ${contact.linkedin ? `URL;type=LinkedIn:${contact.linkedin}` : ''}
 ${contact.twitter ? `URL;type=Twitter:${contact.twitter}` : ''}
 ${contact.wechat ? `X-WECHAT:${contact.wechat}` : ''}
+${contact.instagram ? `URL;type=Instagram:${contact.instagram}` : ''}
+${contact.facebook ? `URL;type=Facebook:${contact.facebook}` : ''}
 END:VCARD`;
 
   const blob = new Blob([vcf], { type: 'text/vcard' });
@@ -92,8 +96,19 @@ async function saveToGoogleContacts() {
         emailAddresses: contact.email ? [{
           value: contact.email
         }] : [],
-        phoneNumbers: contact.phone ? [{
-          value: contact.phone
+        phoneNumbers: [
+          ...(contact.mobilePhone ? [{
+            value: contact.mobilePhone,
+            type: 'mobile'
+          }] : []),
+          ...(contact.landlinePhone ? [{
+            value: contact.landlinePhone,
+            type: 'work'
+          }] : [])
+        ],
+        biographies: contact.notes ? [{
+          value: contact.notes,
+          contentType: 'TEXT_PLAIN'
         }] : [],
         organizations: contact.company ? [{
           name: contact.company,
@@ -115,7 +130,9 @@ async function saveToGoogleContacts() {
         }] : [],
         urls: [
           ...(contact.linkedin ? [{type: 'profile', value: contact.linkedin}] : []),
-          ...(contact.twitter ? [{type: 'twitter', value: contact.twitter}] : [])
+          ...(contact.twitter ? [{type: 'twitter', value: contact.twitter}] : []),
+          ...(contact.instagram ? [{type: 'instagram', value: contact.instagram}] : []),
+          ...(contact.facebook ? [{type: 'facebook', value: contact.facebook}] : [])
         ],
         userDefined: contact.wechat ? [{
           key: 'WeChat',
@@ -143,7 +160,9 @@ function getFormData() {
   return {
     name: document.getElementById('name').value.trim(),
     email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
+    mobilePhone: document.getElementById('mobilePhone').value.trim(),
+    landlinePhone: document.getElementById('landlinePhone').value.trim(),
+    notes: document.getElementById('notes').value.trim(),
     company: document.getElementById('company').value.trim(),
     title: document.getElementById('title').value.trim(),
     streetAddress: document.getElementById('streetAddress').value.trim(),
@@ -152,7 +171,9 @@ function getFormData() {
     country: document.getElementById('country').value.trim(),
     linkedin: document.getElementById('linkedin').value.trim(),
     wechat: document.getElementById('wechat').value.trim(),
-    twitter: document.getElementById('twitter').value.trim()
+    twitter: document.getElementById('twitter').value.trim(),
+    instagram: document.getElementById('instagram').value.trim(),
+    facebook: document.getElementById('facebook').value.trim()
   };
 }
 

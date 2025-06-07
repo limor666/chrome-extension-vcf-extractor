@@ -8,7 +8,8 @@
 }
 
 .address-section,
-.social-section {
+.social-section,
+.notes-section {
   background: #f8f9fa;
   padding: 15px;
   border-radius: 8px;
@@ -17,7 +18,8 @@
 }
 
 .address-section h3,
-.social-section h3 {
+.social-section h3,
+.notes-section h3 {
   margin-top: 0;
   margin-bottom: 15px;
   color: #2c5282;
@@ -38,7 +40,8 @@ input[type="url"] {
   font-weight: bold;
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
@@ -163,6 +166,11 @@ code {
 
 .help-text a:hover {
   text-decoration: underline;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 h1, h2 {

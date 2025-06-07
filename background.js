@@ -92,9 +92,15 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         contents: [{
           parts: [{
             text: `Extract only the following fields from this text and respond with ONLY a JSON object containing these fields (no other text or formatting):
-name, email, phone, company, title, 
+name, email, mobilePhone, landlinePhone, company, title, 
 streetAddress, city, postcode, country,
-linkedin, wechat, twitter.
+linkedin, wechat, twitter, instagram, facebook.
+
+Extract ALL phone numbers found in the text. For landlinePhone, use the first number with 'T:', 'Tel:', 'Phone:' prefix. For mobilePhone, include any of these:
+1. Numbers with 'M:', 'Mobile:', 'Cell:' prefix
+2. Additional phone numbers without T/Tel prefix
+3. Extension numbers (e.g., "Ext: XXX") should be appended to their associated main number
+4. Secondary office numbers (additional T: numbers) should be added to mobilePhone to let user decide
 
 Split any full address into its components. For country, provide the full official country name (e.g., 'United States' not 'USA', 'United Kingdom' not 'UK'). Format social media as full URLs if possible.
 Text to process: ${selectedText}`
@@ -132,7 +138,7 @@ Text to process: ${selectedText}`
       console.log('Parsed contact info:', contactInfo);
       
       // Validate that we have at least some of the required fields
-      if (!contactInfo || (typeof contactInfo !== 'object') || (!contactInfo.name && !contactInfo.email && !contactInfo.phone)) {
+      if (!contactInfo || (typeof contactInfo !== 'object') || (!contactInfo.name && !contactInfo.email && !contactInfo.mobilePhone && !contactInfo.landlinePhone)) {
         throw new Error('Could not extract valid contact information from the text');
       }
 

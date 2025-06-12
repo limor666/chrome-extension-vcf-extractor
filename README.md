@@ -11,6 +11,30 @@ This extension extracts contact information from selected text using either Goog
 - Save directly to Google Contacts
 - Custom icon in toolbar and context menu
 
+## Screenshots
+
+### Configuration
+
+Choose your preferred AI model and set up your API key:
+
+**Gemini Setup**
+![Gemini API Setup](images/options-page-gemini.png)
+*Configure Google Gemini API key and options*
+
+**OpenRouter Setup**
+![OpenRouter Setup](images/options-page-openrouter.png)
+*Configure OpenRouter API key with free tier access*
+
+### Contact Extraction
+
+Extract and edit contact information from any selected text:
+
+![Contact Extraction](images/popup1.png)
+*Review and edit extracted contact details*
+
+![Save Options](images/popup2.png)
+*Choose to download as VCF or save to Google Contacts*
+
 ## Setup
 
 1. Choose your AI model and get API key:

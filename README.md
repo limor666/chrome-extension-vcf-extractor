@@ -13,6 +13,16 @@ This extension extracts contact information from selected text using either Goog
 
 ## Screenshots
 
+### Contact Extraction
+
+Extract and edit contact information from any selected text:
+
+![Contact Extraction](images/popup1.png)
+*Review and edit extracted contact details*
+
+![Save Options](images/popup2.png)
+*Choose to download as VCF or save to Google Contacts*
+
 ### Configuration
 
 Choose your preferred AI model and set up your API key:
@@ -24,16 +34,6 @@ Choose your preferred AI model and set up your API key:
 **OpenRouter Setup**
 ![OpenRouter Setup](images/options-page-openrouter.png)
 *Configure OpenRouter API key with free tier access*
-
-### Contact Extraction
-
-Extract and edit contact information from any selected text:
-
-![Contact Extraction](images/popup1.png)
-*Review and edit extracted contact details*
-
-![Save Options](images/popup2.png)
-*Choose to download as VCF or save to Google Contacts*
 
 ## Setup
 

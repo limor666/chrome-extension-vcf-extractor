@@ -75,23 +75,37 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     console.log('Selected text:', selectedText);
     
     try {
-      // Get API key from storage
-      const { geminiKey } = await chrome.storage.local.get(['geminiKey']);
-      
-      if (!geminiKey) {
-        console.error('Gemini API key not configured');
-        alert('Please configure your Gemini API key in the extension options.');
+      // Get settings from storage
+      const { modelChoice, geminiKey, openrouterKey } = await chrome.storage.local.get([
+        'modelChoice',
+        'geminiKey',
+        'openrouterKey'
+      ]);
+
+      if (!modelChoice) {
+        console.error('Model not configured');
+        await chrome.notifications.create({
+          type: 'basic',
+          iconUrl: 'icons/icon128.png',
+          title: 'Configuration Required',
+          message: 'Please configure your preferred AI model in the extension options.'
+        });
         chrome.runtime.openOptionsPage();
         return;
       }
 
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
-      console.log('Making API request...');
-      
-      const requestBody = {
-        contents: [{
-          parts: [{
-            text: `Extract only the following fields from this text and respond with ONLY a JSON object containing these fields (no other text or formatting):
+      // Show processing notification
+      const processingNotificationId = 'processing_' + Date.now();
+      await chrome.notifications.create(processingNotificationId, {
+        type: 'basic',
+        iconUrl: 'icons/icon128.png',
+        title: 'Processing',
+        message: 'Please wait while the AI processes your text. This may take 15-20 seconds...',
+        requireInteraction: true,
+        priority: 2
+      });
+
+      const prompt = `You are a contact information extractor. Given the following text, extract information into a JSON object with these fields. Include a field only if information is found, otherwise use empty string. Format carefully and respond with ONLY the JSON object, no other text:
 name, email, mobilePhone, landlinePhone, company, title, 
 streetAddress, city, postcode, country,
 linkedin, wechat, twitter, instagram, facebook.
@@ -103,35 +117,109 @@ Extract ALL phone numbers found in the text. For landlinePhone, use the first nu
 4. Secondary office numbers (additional T: numbers) should be added to mobilePhone to let user decide
 
 Split any full address into its components. For country, provide the full official country name (e.g., 'United States' not 'USA', 'United Kingdom' not 'UK'). Format social media as full URLs if possible.
-Text to process: ${selectedText}`
-          }]
-        }]
-      };
+Text to process: ${selectedText}`;
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        mode: 'cors',
-        body: JSON.stringify(requestBody)
-      });
+      let response;
+      
+      if (modelChoice === 'gemini') {
+        if (!geminiKey) {
+          console.error('Gemini API key not configured');
+          await chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'icons/icon128.png',
+            title: 'Configuration Required',
+            message: 'Please configure your Gemini API key in the extension options.'
+          });
+          chrome.runtime.openOptionsPage();
+          return;
+        }
 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
+        console.log('Making Gemini API request...');
+        
+        response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors',
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }]
+          })
+        });
+      } else if (modelChoice === 'openrouter') {
+        if (!openrouterKey) {
+          console.error('OpenRouter API key not configured');
+          await chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'icons/icon128.png',
+            title: 'Configuration Required',
+            message: 'Please configure your OpenRouter API key in the extension options.'
+          });
+          chrome.runtime.openOptionsPage();
+          return;
+        }
+
+        console.log('Making OpenRouter API request...');
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+        try {
+          response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            signal: controller.signal,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${openrouterKey}`,
+              'HTTP-Referer': 'chrome-extension://contact-extractor',
+              'X-Title': 'Contact Information Extractor'
+            },
+            body: JSON.stringify({
+              model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
+              messages: [
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ]
+            })
+          });
+        } finally {
+          clearTimeout(timeout);
+        }
+      }
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (error) {
+        console.error('Error parsing response:', error);
+        throw new Error('Failed to parse API response. Please try again.');
+      }
+      
       if (!response.ok) {
         console.error('API request failed:', response.status, response.statusText);
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error(`Failed to contact Gemini API: ${response.status} ${response.statusText}`);
+        console.error('Error response:', data);
+        throw new Error(data.error?.message || `Failed to contact ${modelChoice === 'gemini' ? 'Gemini' : 'OpenRouter'} API: ${response.status} ${response.statusText}`);
       }
-
-      const data = await response.json();
       console.log('API response:', data);
-      
-      if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0].text) {
-        throw new Error('Unexpected API response format');
-      }
 
-      const rawText = data.candidates[0].content.parts[0].text;
+      let rawText;
+      if (modelChoice === 'gemini') {
+        if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+          throw new Error('Unexpected Gemini API response format');
+        }
+        rawText = data.candidates[0].content.parts[0].text;
+      } else {
+        if (!data.choices?.[0]?.message?.content) {
+          throw new Error('Unexpected OpenRouter API response format');
+        }
+        rawText = data.choices[0].message.content;
+      }
       console.log('Raw text from API:', rawText);
       
       const contactInfo = extractJsonFromText(rawText);
@@ -142,8 +230,18 @@ Text to process: ${selectedText}`
         throw new Error('Could not extract valid contact information from the text');
       }
 
+      // Update notification to show completion
+      await chrome.notifications.clear(processingNotificationId);
+      // Then show success notification
+      await chrome.notifications.create('success_' + Date.now(), {
+        type: 'basic',
+        iconUrl: 'icons/icon128.png',
+        title: 'Success',
+        message: 'Contact information extracted successfully!'
+      });
+
       // Store the contact info temporarily
-      chrome.storage.local.set({ tempContact: contactInfo }, () => {
+      await chrome.storage.local.set({ tempContact: contactInfo }, () => {
         if (chrome.runtime.lastError) {
           console.error('Error storing contact info:', chrome.runtime.lastError);
           throw new Error('Failed to store contact information');
@@ -159,7 +257,17 @@ Text to process: ${selectedText}`
       });
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message);
+      // Clear processing notification if it exists
+      if (processingNotificationId) {
+        await chrome.notifications.clear(processingNotificationId);
+      }
+      // Show error notification
+      await chrome.notifications.create('error_' + Date.now(), {
+        type: 'basic',
+        iconUrl: 'icons/icon128.png',
+        title: 'Error',
+        message: error.message
+      });
     }
   }
 });

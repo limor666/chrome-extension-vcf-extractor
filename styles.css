@@ -41,7 +41,8 @@ input[type="url"] {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
@@ -157,6 +158,67 @@ code {
 
 #copyId:hover {
   background: #cbd5e0;
+}
+
+/* Model Selection Styles */
+#modelChoice {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+}
+
+#modelChoice:focus {
+  outline: none;
+  border-color: #4285f4;
+}
+
+/* OpenRouter Authentication Styles */
+.auth-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background-color: #4285f4;
+  color: white;
+  font-weight: 500;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.auth-button:hover {
+  background-color: #357abd;
+}
+
+.auth-status {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  text-align: center;
+  display: none;
+}
+
+.auth-status.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  display: block;
+}
+
+.auth-status.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  display: block;
+}
+
+.help-text ul {
+  margin: 10px 0;
+  padding-left: 20px;
+  list-style-type: disc;
 }
 
 .help-text a {

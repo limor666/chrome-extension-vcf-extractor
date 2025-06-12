@@ -9,18 +9,61 @@
     <h1>Contact Extractor Settings</h1>
     <form id="settingsForm">
       <div class="setup-section">
+        <h2>Model Selection</h2>
+        <p class="setup-info">Choose which AI model to use for contact information extraction</p>
+        <div class="form-group">
+          <label for="modelChoice">Select Model:</label>
+          <select id="modelChoice" required>
+            <option value="gemini">Google Gemini</option>
+            <option value="openrouter">OpenRouter (Deepseek)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="geminiSection" class="setup-section">
         <h2>Gemini API Key</h2>
-        <p class="setup-info">Used for AI-powered contact information extraction from text</p>
+        <p class="setup-info">Used for Google's Gemini AI model</p>
         <div class="form-group">
           <label for="geminiKey">Gemini API Key:</label>
-          <input type="password" id="geminiKey" required>
+          <input type="password" id="geminiKey">
           <div class="help-text">
             <strong>How to get it:</strong>
             <ol>
-              <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
-              <li>Click "Create API Key" if you don't have one</li>
+              <li>Visit <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a></li>
+              <li>Search for "create project" and click the resulting link</li>
+              <li>Name your project (e.g., "chrome-extension-vcf-extractor")</li>
+              <li>Go to APIs and Services panel and click "Create Credentials"</li>
+              <li>Set Application Restrictions to None</li>
+              <li>Restrict Key to "Generative Language API" and Save</li>
+              <li>Find the credential in the list and click Show Key</li>
               <li>Copy and paste the key here</li>
             </ol>
+          </div>
+        </div>
+      </div>
+
+      <div id="openrouterSection" class="setup-section" style="display: none;">
+        <h2>OpenRouter API Key</h2>
+        <p class="setup-info">Use OpenRouter's free Deepseek model for contact extraction</p>
+        <div class="form-group">
+          <label for="openrouterKey">OpenRouter API Key:</label>
+          <input type="password" id="openrouterKey">
+          <div class="help-text">
+            <strong>How to get it:</strong>
+            <ol>
+              <li>Visit <a href="https://openrouter.ai/keys" target="_blank">OpenRouter Keys Page</a></li>
+              <li>Click "Sign in with Google" to create an account</li>
+              <li>After signing in, click "+ Create Key"</li>
+              <li>Enter a name for your key (e.g., "Contact Extractor")</li>
+              <li>Copy the generated API key and paste it here</li>
+            </ol>
+            <strong>About the Free Tier:</strong>
+            <ul>
+              <li>Uses Deepseek R1 0528 Qwen3 8B model</li>
+              <li>Includes 1M tokens (~750K words) per month</li>
+              <li>No credit card or payment required</li>
+              <li>Response time: 15-20 seconds typical</li>
+            </ul>
           </div>
         </div>
       </div>

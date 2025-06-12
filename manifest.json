@@ -2,13 +2,20 @@
   "manifest_version": 3,
   "name": "Contact Information Extractor",
   "version": "1.0",
-  "description": "Extract contact information from highlighted text using Gemini API",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://openrouter.ai https://*.googleapis.com"
+  },
+  "web_accessible_resources": [{
+    "resources": ["icons/*"],
+    "matches": ["https://openrouter.ai/*"]
+  }],
+  "description": "Extract contact information from highlighted text using Gemini API or OpenRouter AI",
   "permissions": [
     "contextMenus",
     "storage",
     "identity",
-    "identity.email",
-    "tabs"
+    "activeTab",
+    "notifications"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -28,9 +35,8 @@
     "service_worker": "background.js"
   },
   "host_permissions": [
-    "*://*/*",
     "https://*.googleapis.com/*",
-    "https://*.google.com/*"
+    "https://openrouter.ai/*"
   ],
   "oauth2": {
     "client_id": "849778126107-g4iaf85pci5qj6qsq35m65ihg7v1olqm.apps.googleusercontent.com",
